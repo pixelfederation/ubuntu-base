@@ -1,6 +1,6 @@
 # - Ubuntu Base Container -
 
-Ubuntu base container packaged with logstah-forwarder, supervisord and several useful scripts intended to be used with containers based off of it.
+Ubuntu base container packaged with logstash-forwarder, supervisord and several useful scripts intended to be used with containers based off of it.
 
 ##### Version Information:
 * **Container Release:** 1.0.0
@@ -73,7 +73,7 @@ Converts a subnet mask to cidr notation and echo's it's value.
 **Usage:** `__escape_svsr_txt <string>`
 
 **Description:**
-Escapes the passed string for use in a supervisor command and ehco's it's value.
+Escapes the passed string for use in a supervisor command and echo's it's value.
 
 
 ---
@@ -118,13 +118,15 @@ Manages the supervisor config for keepalived.
 Manages the supervisor config for logstash-forwarder and modifies the configuration if certain variables are supplied.
 
 
-| **Variable**                         | **Default**                                                                            |
-|--------------------------------------|----------------------------------------------------------------------------------------|
-| `SERVICE_LOGSTASH_FORWARDER`         |                                                                                        |
-| `SERVICE_LOGSTASH_FORWARDER_CONF`    |                                                                                        |
-| `SERVICE_LOGSTASH_FORWARDER_ADDRESS` |                                                                                        |
-| `SERVICE_LOGSTASH_FORWARDER_CERT`    |                                                                                        |
-| `SERVICE_LOGSTASH_FORWARDER_CMD`     | `/opt/logstash-forwarder/logstash-fowarder -cofig="${SERVICE_LOGSTASH_FOWARDER_CONF}"` |
+| **Variable**                         | **Default**                                                                              |
+|--------------------------------------|------------------------------------------------------------------------------------------|
+| `SERVICE_LOGSTASH_FORWARDER`         |                                                                                          |
+| `SERVICE_LOGSTASH_FORWARDER_CONF`    |                                                                                          |
+| `SERVICE_LOGSTASH_FORWARDER_ADDRESS` |                                                                                          |
+| `SERVICE_LOGSTASH_FORWARDER_CERT`    |                                                                                          |
+| `SERVICE_LOGSTASH_FORWARDER_CMD`     | `/opt/logstash-forwarder/logstash-forwarder -config="${SERVICE_LOGSTASH_FOWARDER_CONF}"` |
+
+
 
 * `SERVICE_LOGSTASH_FORWARDER` - Enables or Disables the Logstash-Forwarder service.
 
@@ -229,9 +231,9 @@ Manages the supervisor config for rsyslog. Rsyslog is only enabled when other ap
 **Usage:** `__config_keepalived`
 
 **Description:**
-If keepalived has been abled via `__config_service_keepalived` This function will autogenerate the keepalived config based on various environment variables.
+If keepalived has been enabled via `__config_service_keepalived` This function will auto generate the keepalived config based on various environment variables.
 
-##### Keepalived Autoconfiguration Options and Defaults
+##### Keepalived Auto Configuration Options and Defaults
 
 
 | **Variable**                                | **Default**                        |
@@ -259,7 +261,7 @@ If keepalived has been abled via `__config_service_keepalived` This function wil
 
 * `KEEPALIVED_INTERFACE` - The host interface that keepalived will monitor and use for VRRP traffic.
 
-* `KEEPALIVED_VIRTUAL_ROUTER_ID` - A unique number from 0 to 255 that should identifiy the VRRP group. Master and Backup should have the same value. Multiple instances of keepalived can be run on the same host, but each pair **MUST** have a unique virtual router id.
+* `KEEPALIVED_VIRTUAL_ROUTER_ID` - A unique number from 0 to 255 that should identify the VRRP group. Master and Backup should have the same value. Multiple instances of keepalived can be run on the same host, but each pair **MUST** have a unique virtual router id.
 
 * `KEEPALIVED_ADVERT_INT` - The VRRP advertisement interval (in seconds).
 
@@ -330,3 +332,5 @@ vrrp_instance MAIN {
 }
 
 ```
+
+
