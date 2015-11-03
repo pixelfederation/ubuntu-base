@@ -1,6 +1,6 @@
 ################################################################################
-# ubuntu-base:1.0.0
-# Date: 9/21/2015
+# ubuntu-base:1.0.1
+# Date: 11/3/2015
 # 
 # Description:
 # Base Ubuntu build with logstash forwarder, supervisor, and various
@@ -24,7 +24,8 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D88E42B4           
 
 COPY ./skel /
 
-RUN chmod +x /opt/scripts/redpill.sh                    \
- && chmod +x /opt/scripts/container_functions.lib.sh    \
+RUN chmod +x /opt/scripts/container_functions.lib.sh    \
+ && chmod +x /opt/scripts/logrotate.sh                  \
+ && chmod +x /opt/scripts/redpill.sh                    \
  && chown -R logstash-forwarder:logstash-forwarder /opt/logstash-forwarder
 
