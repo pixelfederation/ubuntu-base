@@ -20,6 +20,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D88E42B4           
      logstash-forwarder                                 \
      supervisor                                         \
  && apt-get clean                                       \
+ && rm -rf /etc/logrotate.d/*                           \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY ./skel /
