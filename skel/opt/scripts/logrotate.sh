@@ -12,6 +12,7 @@ cat << _EOF_
 logrotate.sh - Small wrapper script for logrotate.
 -i | --interval     The interval in seconds that logrotate should run.
 -c | --config       Path to the logrotate config.
+-s | --script       A script to be executed in place of logrotate.
 -f | --force        Forces log rotation.
 -v | --verbose      Display verbose output.
 -d | --debug        Enabled debugging, and implies verbose output. No state file changes.
@@ -40,6 +41,10 @@ main() {
       logrotate_config="$2"
       shift
       ;;
+    -s|--script)
+      logrotate_script="$2"
+      shift
+      ;;
     -f|--force)
       logrotate_cmd+="-f "
       ;;
@@ -56,17 +61,27 @@ main() {
     shift
   done
 
-  if [[ ! "$logrotate_config" && -f "$logrotate_config" ]]; then
-      echo "[$(date)][Logrotate] No config specified. Terminating logrotate script."
+  logrotate_config=${logrotate_config:-/etc/logrotate.conf}
+
+  if [[ (! "$logrotate_config" && -f "$logrotate_config") || (! "$logrotate_cmd" && -f "$logrotate_cmd") ]]; then
+      echo "[$(date)][Logrotate] No config or script specified. Terminating logrotate script."
       exit
   fi
 
   logrotate_cmd+="$logrotate_config"
   logrotate_interval=${logrotate_interval:-3600}
 
+
   echo "[$(date)][Logrotate] Starting Logrotate service."
-  echo "[$(date)][Logrotate] Logrotate config: $logrotate_config"
-  echo "[$(date)][Logrotate] Logrotate command: $logrotate_cmd"
+
+  if [[ ! $logrotate_script ]]; then
+    echo "[$(date)][Logrotate] Logrotate config: $logrotate_config"
+    echo "[$(date)][Logrotate] Logrotate command: $logrotate_cmd"
+  else
+    logrotate_cmd="$logrotate_script"
+    echo "[$(date)][Logrotate] Logrotate script: $logrotate_script"
+  fi
+
   echo "[$(date)][Logrotate] Interval: $logrotate_interval (seconds)"
 
   sleep $logrotate_interval & sleep_pid=$!

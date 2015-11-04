@@ -117,15 +117,16 @@ Manages the supervisor config for keepalived.
 **Description**
 Manages the supervisor config for logrotate bash helper script.
 
-| **Variable**                 | **Default**                                                      |
-|------------------------------|------------------------------------------------------------------|
-| `SERVICE_LOGROTATE`          |                                                                  |
-| `SERVICE_LOGROTATE_INTERVAL` |                                                                  |
-| `SERVICE_LOGROTATE_CONFIG`   |                                                                  |
-| `SERVICE_LOGROTATE_FORCE`    |                                                                  |
-| `SERVICE_LOGROTATE_VERBOSE`  |                                                                  |
-| `SERVICE_LOGROTATE_DEBUG`    |                                                                  |
-| `SERVICE_LOGROTATE_CMD`      | `/opt/scripts/logrotate.sh -c $SERVICE_LOGROTATE_CONFIG <flags>` |
+| **Variable**                 | **Default**                         |
+|------------------------------|-------------------------------------|
+| `SERVICE_LOGROTATE`          |                                     |
+| `SERVICE_LOGROTATE_INTERVAL` |                                     |
+| `SERVICE_LOGROTATE_CONFIG`   |                                     |
+| `SERVICE_LOGROTATE_SCRIPT`   |                                     |
+| `SERVICE_LOGROTATE_FORCE`    |                                     |
+| `SERVICE_LOGROTATE_VERBOSE`  |                                     |
+| `SERVICE_LOGROTATE_DEBUG`    |                                     |
+| `SERVICE_LOGROTATE_CMD`      | `/opt/scripts/logrotate.sh <flags>` |
 
 ##### Description
 
@@ -133,7 +134,9 @@ Manages the supervisor config for logrotate bash helper script.
 
 * `SERVICE_LOGROTATE_INTERVAL` - The interval in seconds between runs logrotate (default set in script to `3600`).
 
-* `SERVICE_LOGROTATE_CONFIG` - The Path to the logrotate configuration file.
+* `SERVICE_LOGROTATE_CONFIG` - The path to the logrotate configuration file.
+
+* `SERVICE_LOGROTATE_SCRIPT` - The path to a script that should be executed instead of calling logrotate directly.
 
 * `SERVICE_LOGROTATE_FORCE` - If set, enables forcing of log rotation.
 

@@ -149,42 +149,43 @@ __config_service_keepalived() {
 ##### config_service_logrotate #####
 # Configures supervisor config for logrotate script
 # SERVICE_LOGROTATE_INTERNVAL - Interval at which logrotate will be run
+# SERVICE_LOGROTATE_CONFIG - path to logrotate config.
+# SERVICE_LOGROTATE_SCRIPT - path to alternate script to execute instead of logrotate.
 # SERVICE_LOGROTATE_FORCE - Force log rotation.
 # SERVICE_LOGROTATE_VERBOSE - if set, enable verbose log output.
 # SERVICE_LOGROTATE_DEBUG - if set, disable status file logging and output all logs to console.
-# SERVICE_LOGROTATE_CONFIG - path to logrotate config.
 # SERVICE_LOGROTATE_CMD - The escaped command passed to supervisor.
 ##### config_service_logrotate #####
 
 __config_service_logrotate() {
   case "${SERVICE_LOGROTATE,,}" in
     enabled)
-      if [[ -f /etc/supervisor/conf.d/050-logrotate.disabled ]]; then
-        mv /etc/supervisor/conf.d/050-logrotate.disabled /etc/supervisor/conf.d/050-logrotate.conf
+      if [[ -f /etc/supervisor/conf.d/990-logrotate.disabled ]]; then
+        mv /etc/supervisor/conf.d/990-logrotate.disabled /etc/supervisor/conf.d/990-logrotate.conf
       fi
 
       local logrotate_cmd="/opt/scripts/logrotate.sh"
       echo "[$(date)][Logrotate][Status] Enabled"  
 
-      if [[ $SERVICE_LOGROTATE_INTERVAL ]]; then
-        logrotate_cmd+=" -i $SERVICE_LOGROTATE_INTERVAL"
-        echo "[$(date)][Logrotate][Interval] $SERVICE_LOGROTATE_INTERVAL"
-      fi
-
-      if [[ $SERVICE_LOGROTATE_FORCE ]]; then
-        logrotate_cmd+=" -f"
-      fi
-
-      if [[ $SERVICE_LOGROTATE_VERBOSE ]]; then
-        logrotate_cmd+=" -v"
-      fi
-
-      if [[ $SERVICE_LOGROTATE_DEBUG ]]; then
-        logrotate_cmd+=" -d"
-      fi
-
-      if [[ $SERVICE_LOGROTATE_CONFIG ]]; then
-        logrotate_cmd+=" -c $SERVICE_LOGROTATE_CONFIG"
+      if [[ $SERVICE_LOGROTATE_SCRIPT ]]; then
+        logrotate_cmd+=" -s $SERVICE_LOGROTATE_SCRIPT"
+      else
+        if [[ $SERVICE_LOGROTATE_INTERVAL ]]; then
+          logrotate_cmd+=" -i $SERVICE_LOGROTATE_INTERVAL"
+          echo "[$(date)][Logrotate][Interval] $SERVICE_LOGROTATE_INTERVAL"
+        fi
+        if [[ $SERVICE_LOGROTATE_FORCE ]]; then
+          logrotate_cmd+=" -f"
+        fi
+        if [[ $SERVICE_LOGROTATE_VERBOSE ]]; then
+          logrotate_cmd+=" -v"
+        fi
+        if [[ $SERVICE_LOGROTATE_DEBUG ]]; then
+          logrotate_cmd+=" -d"
+        fi
+        if [[ $SERVICE_LOGROTATE_CONFIG ]]; then
+          logrotate_cmd+=" -c $SERVICE_LOGROTATE_CONFIG"
+        fi
       fi
 
       logrotate_cmd="$(__escape_svsr_txt "$logrotate_cmd")"
@@ -193,14 +194,14 @@ __config_service_logrotate() {
       echo "[$(date)][Logrotate][Start-Command] $SERVICE_LOGROTATE_CMD"
       ;;
     disabled)
-      if [[ -f /etc/supervisor/conf.d/050-logrotate.conf ]]; then
-        mv /etc/supervisor/conf.d/050-logrotate.conf /etc/supervisor/conf.d/050-logrotate.disabled
+      if [[ -f /etc/supervisor/conf.d/990-logrotate.conf ]]; then
+        mv /etc/supervisor/conf.d/990-logrotate.conf /etc/supervisor/conf.d/990-logrotate.disabled
       fi
       echo "[$(date)][Logrotate][Status] Disabled"
       ;;
     *)
-      if [[ -f /etc/supervisor/conf.d/050-logrotate.conf ]]; then
-        mv /etc/supervisor/conf.d/050-logrotate.conf /etc/supervisor/conf.d/050-logrotate.disabled
+      if [[ -f /etc/supervisor/conf.d/990-logrotate.conf ]]; then
+        mv /etc/supervisor/conf.d/990-logrotate.conf /etc/supervisor/conf.d/990-logrotate.disabled
       fi
       echo "[$(date)][Logrotate][Init] Unrecognized Option. Defaulting to disabled."
       echo "[$(date)][Logrotate][Status] Disabled."
