@@ -3,7 +3,7 @@
 Ubuntu base container packaged with logstash-forwarder, supervisord and several useful scripts intended to be used with containers based off of it.
 
 ##### Version Information:
-* **Container Release:** 1.0.0
+* **Container Release:** 1.0.1
 
 ---
 ---
@@ -16,6 +16,7 @@ Ubuntu base container packaged with logstash-forwarder, supervisord and several 
  * [escape_svsr_txt](#escape_svsr_txt)
 * [Supervisor Config Functions](#supervisor-config-functions)
  * [config_service_keepalived](#config_service_keepalived)
+ * [config_service_logrotate](#config_service_logrotate)
  * [config_service_logstash_forwarder](#config_service_logstash_forwarder)
  * [config_service_nslcd](#config_service_nslcd)
  * [config_service_redpill](#config_service_redpill)
@@ -108,6 +109,45 @@ Manages the supervisor config for keepalived.
 
 ---
 
+#### config_service_logrotate
+**Name:** `config_service_logrotate`
+**Usage:** `__config_service_logrotate`
+**Supervisor Config:** `/etc/supervisor/conf.d/990-logrotate.conf`
+
+**Description**
+Manages the supervisor config for logrotate bash helper script.
+
+| **Variable**                 | **Default**                         |
+|------------------------------|-------------------------------------|
+| `SERVICE_LOGROTATE`          |                                     |
+| `SERVICE_LOGROTATE_INTERVAL` |                                     |
+| `SERVICE_LOGROTATE_CONFIG`   |                                     |
+| `SERVICE_LOGROTATE_SCRIPT`   |                                     |
+| `SERVICE_LOGROTATE_FORCE`    |                                     |
+| `SERVICE_LOGROTATE_VERBOSE`  |                                     |
+| `SERVICE_LOGROTATE_DEBUG`    |                                     |
+| `SERVICE_LOGROTATE_CMD`      | `/opt/scripts/logrotate.sh <flags>` |
+
+##### Description
+
+* `SERVICE_LOGROTATE` - Enables or disables the nslcd service. (**Options:** `enabled` or `disabled`)
+
+* `SERVICE_LOGROTATE_INTERVAL` - The interval in seconds between runs logrotate (default set in script to `3600`).
+
+* `SERVICE_LOGROTATE_CONFIG` - The path to the logrotate configuration file.
+
+* `SERVICE_LOGROTATE_SCRIPT` - The path to a script that should be executed instead of calling logrotate directly.
+
+* `SERVICE_LOGROTATE_FORCE` - If set, enables forcing of log rotation.
+
+* `SERVICE_LOGROTATE_VERBOSE` - If set, enables verbose log output.
+
+* `SERVICE_LOGROTATE_DEBUG` - If set, enabled debug log output.
+
+*  `SERVICE_LOGROTATE_CMD` - The command that is passed to supervisor. If overriding, must be an escaped python string expression. Please see the [Supervisord Command Documentation](http://supervisord.org/configuration.html#program-x-section-settings) for further information.
+
+
+---
 
 #### config_service_logstash_forwarder
 **Name:** `config_service_logstash_forwarder`
