@@ -167,13 +167,14 @@ __config_service_logrotate() {
       local logrotate_cmd="/opt/scripts/logrotate.sh"
       echo "[$(date)][Logrotate][Status] Enabled"  
 
+      if [[ $SERVICE_LOGROTATE_INTERVAL ]]; then
+        logrotate_cmd+=" -i $SERVICE_LOGROTATE_INTERVAL"
+        echo "[$(date)][Logrotate][Interval] $SERVICE_LOGROTATE_INTERVAL"
+      fi
+
       if [[ $SERVICE_LOGROTATE_SCRIPT ]]; then
         logrotate_cmd+=" -s $SERVICE_LOGROTATE_SCRIPT"
       else
-        if [[ $SERVICE_LOGROTATE_INTERVAL ]]; then
-          logrotate_cmd+=" -i $SERVICE_LOGROTATE_INTERVAL"
-          echo "[$(date)][Logrotate][Interval] $SERVICE_LOGROTATE_INTERVAL"
-        fi
         if [[ $SERVICE_LOGROTATE_FORCE ]]; then
           logrotate_cmd+=" -f"
         fi
