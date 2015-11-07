@@ -63,7 +63,7 @@ main() {
 
   logrotate_config=${logrotate_config:-/etc/logrotate.conf}
 
-  if [[ (! "$logrotate_config" && -f "$logrotate_config") || (! "$logrotate_cmd" && -f "$logrotate_cmd") ]]; then
+  if [[ (! -f "$logrotate_config") || ( ! "$logrotate_script" && ! -f "$logrotate_script") ]]; then
       echo "[$(date)][Logrotate] No config or script specified. Terminating logrotate script."
       exit
   fi
@@ -78,6 +78,7 @@ main() {
     echo "[$(date)][Logrotate] Logrotate config: $logrotate_config"
     echo "[$(date)][Logrotate] Logrotate command: $logrotate_cmd"
   else
+    chmod +x "$logrotate_script"
     logrotate_cmd="$logrotate_script"
     echo "[$(date)][Logrotate] Logrotate script: $logrotate_script"
   fi

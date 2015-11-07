@@ -112,7 +112,7 @@ Manages the supervisor config for keepalived.
 #### config_service_logrotate
 **Name:** `config_service_logrotate`
 **Usage:** `__config_service_logrotate`
-**Supervisor Config:** `/etc/supervisor/conf.d/050-logrotate.conf`
+**Supervisor Config:** `/etc/supervisor/conf.d/990-logrotate.conf`
 
 **Description**
 Manages the supervisor config for logrotate bash helper script.

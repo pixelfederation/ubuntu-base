@@ -189,7 +189,7 @@ __config_service_logrotate() {
       fi
 
       logrotate_cmd="$(__escape_svsr_txt "$logrotate_cmd")"
-      export SERVICE_LOGROTATE_CMD=${SERVICE_REDPILL_CMD:-"$logrotate_cmd"}
+      export SERVICE_LOGROTATE_CMD=${SERVICE_LOGROTATE_CMD:-"$logrotate_cmd"}
       
       echo "[$(date)][Logrotate][Start-Command] $SERVICE_LOGROTATE_CMD"
       ;;
