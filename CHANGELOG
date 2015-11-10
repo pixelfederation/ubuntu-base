@@ -1,2 +1,5 @@
+2015-11-10 - 1.0.2:
+ - Fixed logrotate issues
+
 2015-11-3 - 1.0.1:
  - Added logrotate support
