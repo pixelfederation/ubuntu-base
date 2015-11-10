@@ -25,7 +25,8 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D88E42B4           
 
 COPY ./skel /
 
-RUN chmod +x /opt/scripts/container_functions.lib.sh    \
+RUN chmod 640 /etc/logrotate.conf                       \
+ && chmod +x /opt/scripts/container_functions.lib.sh    \
  && chmod +x /opt/scripts/logrotate.sh                  \
  && chmod +x /opt/scripts/redpill.sh                    \
  && chown -R logstash-forwarder:logstash-forwarder /opt/logstash-forwarder
