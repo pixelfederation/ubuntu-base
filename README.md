@@ -3,7 +3,7 @@
 Ubuntu base container packaged with logstash-forwarder, supervisord and several useful scripts intended to be used with containers based off of it.
 
 ##### Version Information:
-* **Container Release:** 1.0.1
+* **Container Release:** 1.0.2
 
 ---
 ---
