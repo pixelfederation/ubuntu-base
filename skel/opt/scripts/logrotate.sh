@@ -90,7 +90,7 @@ main() {
   wait
 
   while true; do
-    "$logrotate_cmd"
+    $logrotate_cmd
     sleep $logrotate_interval & sleep_pid=$!
     trap "_terminator $sleep_pid" INT KILL TERM
     wait
