@@ -1,3 +1,6 @@
+2015-12-24 - 1.0.3:
+ - Logrotate service config now uses SERVICE_LOGROTATE_CONF instead of SERVICE_LOGROTATE_CONFIG
+
 2015-11-10 - 1.0.2:
  - Fixed logrotate issues
 

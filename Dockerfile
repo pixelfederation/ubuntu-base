@@ -1,6 +1,6 @@
 ################################################################################
-# ubuntu-base:1.0.2
-# Date: 11/10/2015
+# ubuntu-base:1.0.3
+# Date: 12/24/2015
 # 
 # Description:
 # Base Ubuntu build with logstash forwarder, supervisor, and various

@@ -121,7 +121,7 @@ Manages the supervisor config for logrotate bash helper script.
 |------------------------------|-------------------------------------|
 | `SERVICE_LOGROTATE`          |                                     |
 | `SERVICE_LOGROTATE_INTERVAL` |                                     |
-| `SERVICE_LOGROTATE_CONFIG`   |                                     |
+| `SERVICE_LOGROTATE_CONF`     |                                     |
 | `SERVICE_LOGROTATE_SCRIPT`   |                                     |
 | `SERVICE_LOGROTATE_FORCE`    |                                     |
 | `SERVICE_LOGROTATE_VERBOSE`  |                                     |
@@ -134,7 +134,7 @@ Manages the supervisor config for logrotate bash helper script.
 
 * `SERVICE_LOGROTATE_INTERVAL` - The interval in seconds between runs logrotate (default set in script to `3600`).
 
-* `SERVICE_LOGROTATE_CONFIG` - The path to the logrotate configuration file.
+* `SERVICE_LOGROTATE_CONF` - The path to the logrotate configuration file.
 
 * `SERVICE_LOGROTATE_SCRIPT` - The path to a script that should be executed instead of calling logrotate directly.
 

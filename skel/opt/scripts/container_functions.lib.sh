@@ -149,7 +149,7 @@ __config_service_keepalived() {
 ##### config_service_logrotate #####
 # Configures supervisor config for logrotate script
 # SERVICE_LOGROTATE_INTERNVAL - Interval at which logrotate will be run
-# SERVICE_LOGROTATE_CONFIG - path to logrotate config.
+# SERVICE_LOGROTATE_CONF - path to logrotate config.
 # SERVICE_LOGROTATE_SCRIPT - path to alternate script to execute instead of logrotate.
 # SERVICE_LOGROTATE_FORCE - Force log rotation.
 # SERVICE_LOGROTATE_VERBOSE - if set, enable verbose log output.
@@ -184,8 +184,8 @@ __config_service_logrotate() {
         if [[ $SERVICE_LOGROTATE_DEBUG ]]; then
           logrotate_cmd+=" -d"
         fi
-        if [[ $SERVICE_LOGROTATE_CONFIG ]]; then
-          logrotate_cmd+=" -c $SERVICE_LOGROTATE_CONFIG"
+        if [[ $SERVICE_LOGROTATE_CONF ]]; then
+          logrotate_cmd+=" -c $SERVICE_LOGROTATE_CONF"
         fi
       fi
 
