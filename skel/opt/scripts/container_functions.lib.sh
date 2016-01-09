@@ -23,8 +23,6 @@
 # - config_service_rsyslog
 # Shared Application Configuration Functions
 # - config_keepalived
-# - config_consul
-# - config_consul_template
 
 
 ########## Helper Functions ##########
@@ -593,12 +591,6 @@ __config_keepalived() {
 
   echo "}" >> "$SERVICE_KEEPALIVED_CONF"
 
-  return 0
-}
-
-
-
-__config_consul_template() {
   return 0
 }
 
