@@ -1,5 +1,5 @@
 ################################################################################
-# ubuntu-base:1.0.3
+# ubuntu-base:1.1.0
 # Date: 12/24/2015
 # 
 # Description:
@@ -25,7 +25,8 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D88E42B4           
 
 COPY ./skel /
 
-RUN chmod 644 /etc/logrotate.conf                       \
+RUN chmod 640 /etc/logrotate.conf                       \
+ && chmod 640 /etc/logrotate.d/*                        \
  && chmod +x /opt/scripts/container_functions.lib.sh    \
  && chmod +x /opt/scripts/logrotate.sh                  \
  && chmod +x /opt/scripts/redpill.sh                    \
