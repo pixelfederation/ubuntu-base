@@ -122,7 +122,7 @@ __config_service_consul() {
         mv /etc/rsyslog.d/consul.disabled /etc/rsyslog.d/consul.conf
       fi
       if [[ ("$SERVICE_LOGROTATE" == "enabled") && (-f /etc/logrotate.d/consul.disabled) ]]; then
-        mv /etc/logrotate.d/consul-.disabled /etc/logrotate.d/consul.conf
+        mv /etc/logrotate.d/consul.disabled /etc/logrotate.d/consul.conf
       fi
 
       local var_name=""
@@ -493,8 +493,8 @@ __config_service_redpill() {
 __config_service_rsyslog() {
   case "${SERVICE_RSYSLOG,,}" in
     enabled)
-      if [[ -f /etc/supervisor/conf.d/000-rsyslog.disabled ]]; then
-          mv /etc/supervisor/conf.d/000-rsyslog.disabled /etc/supervisor/conf.d/000-rsyslog.conf
+      if [[ -f /etc/supervisor/conf.d/rsyslog.disabled ]]; then
+          mv /etc/supervisor/conf.d/rsyslog.disabled /etc/supervisor/conf.d/rsyslog.conf
       fi
 
       export SERVICE_RSYSLOG_CONF=${SERVICE_RSYSLOG_CONF:-/etc/rsyslog.conf}
