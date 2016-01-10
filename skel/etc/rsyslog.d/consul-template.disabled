@@ -1,0 +1,4 @@
+if $programname == 'consul-template' then {
+    /var/log/consul-template.log
+      stop
+}
