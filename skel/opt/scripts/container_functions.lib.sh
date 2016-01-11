@@ -13,7 +13,6 @@
 # Config Helper Functions
 # - escape_svsr_txt
 # Supervisor Service Config Functions
-# - config_service_consul
 # - config_service_consul_template
 # - config_service_keepalived
 # - config_service_logrotate
@@ -108,62 +107,6 @@ __escape_svsr_txt() {
 
 ########## Supervisor Service Config Functions ##########
 
-##### config_service_consul #####
-# Configures the supervisor config for the consul agent.
-##### config_service_consul #####
-
-__config_service_consul() {
-  case "${SERVICE_CONSUL:-}" in
-    enabled)
-      if [[ -f /etc/supervisor/conf.d/consul.disabled ]]; then
-        mv /etc/supervisor/conf.d/consul.disabled /etc/supervisor/conf.d/consul.conf
-      fi
-      if [[ ("$SERVICE_RSYSLOG" == "enabled") && (-f /etc/rsyslog.d/consul.disabled) ]]; then
-        mv /etc/rsyslog.d/consul.disabled /etc/rsyslog.d/consul.conf
-      fi
-      if [[ ("$SERVICE_LOGROTATE" == "enabled") && (-f /etc/logrotate.d/consul.disabled) ]]; then
-        mv /etc/logrotate.d/consul.disabled /etc/logrotate.d/consul.conf
-      fi
-
-      local var_name=""
-      local cmd_flags=()
-      local consul_cmd=""
-
-      export CONSUL_DATA_DIR=${CONSUL_DATA_DIR:-/var/consul/data}
-      export CONSUL_SYSLOG=${CONSUL_SYSLOG:-true}
-
-      if ! compgen -A variable | grep -q -E "CONSUL_CONFIG_(DIR|FILE)_[0-9]{1,3}"; then
-        export CONSUL_CONFIG_DIR=/etc/consul/conf.d
-      fi  
-
-      if [[ (! $CONSUL_UI_DIR)  && ( -f /var/consul/web/index.html ) ]]; then
-        export CONSUL_UI_DIR=${CONSUL_UI_DIR:-/var/consul/web}
-      fi
-
-      for i in $(compgen -A variable | awk '/^CONSUL_/ && !/^CONSUL_AUTOCONF/ && !/^CONSUL_TEMPLATE/'); do
-        var_name="-$(echo "$i" | awk '{print tolower(substr($1,8))}' | sed -e 's|_[0-9]\{1,3\}||' -e 's|_|-|g')"
-        cmd_flags+=( "$var_name=\"${!i}\"" )
-      done
-    
-      consul_cmd="consul agent ${cmd_flags[*]}"
-      export SERVICE_CONSUL_CMD=${SERVICE_CONSUL_CMD:-"$(__escape_svsr_txt "$consul_cmd")"}
-      echo "[$(date)][Consul][Status] Enabled."
-      echo "[$(date)][Consul][Start-Command] $SERVICE_CONSUL_CMD"
-      ;;
-    disabled|*)
-      if [[ "$SERVICE_CONSUL" != "disabled" ]]; then
-        echo "[$(date)][Consul][Init] Unrecognized Option. Defaulting to disabled."
-      fi
-      if [[ -f /etc/supervisor/conf.d/consul.conf ]]; then
-        mv /etc/supervisor/conf.d/consul.conf /etc/supervisor/conf.d/consul.disabled
-      fi
-      echo "[$(date)][Consul][Status] Disabled."
-      ;;
-  esac
-
-  return 0
-}
-
 ##### config_service_consul_template #####
 # Configures the supervisor config for the consul-template agent.
 ##### config_service_consul_template #####
@@ -185,7 +128,7 @@ __config_service_consul_template() {
       local cmd_flags=()
       local consul_template_cmd=""
 
-      export CONSUL_TEMPLATE_CONFIG=${CONSUL_TEMPLATE_CONFIG:-/etc/consul-template/conf.d}
+      export CONSUL_TEMPLATE_CONFIG=${CONSUL_TEMPLATE_CONFIG:-/etc/consul/template/conf.d}
       export CONSUL_TEMPLATE_SYSLOG=${CONSUL_TEMPLATE_SYSLOG:-true}
 
       for i in $(compgen -A variable | awk '/^CONSUL_TEMPLATE_/'); do

@@ -1,4 +1,0 @@
-if $programname == 'consul' then {
-    /var/log/consul.log
-      stop
-}

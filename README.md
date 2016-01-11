@@ -3,7 +3,7 @@
 Ubuntu base container packaged with logstash-forwarder, supervisord and several useful scripts intended to be used with containers based off of it.
 
 ##### Version Information:
-* **Container Release:** 1.0.2
+* **Container Release:** 1.1.0
 
 ---
 ---
@@ -15,6 +15,7 @@ Ubuntu base container packaged with logstash-forwarder, supervisord and several 
  * [mask2cidr](#mask2cidr)
  * [escape_svsr_txt](#escape_svsr_txt)
 * [Supervisor Config Functions](#supervisor-config-functions)
+ * [config_service_consul_template](#config_service_consul_template)
  * [config_service_keepalived](#config_service_keepalived)
  * [config_service_logrotate](#config_service_logrotate)
  * [config_service_logstash_forwarder](#config_service_logstash_forwarder)
@@ -31,6 +32,16 @@ Ubuntu base container packaged with logstash-forwarder, supervisord and several 
 
 #### Container Functions
 All init scripts that use this image as their base source a bash script supplying useful functions to configure supervisor settings or other components used throughout the various init scripts. It can be found in `/opt/scripts/container_functions.lib.sh`.
+
+#### Consul-Template
+Consul-template is an optional service that provides an easy method of updating configurations of applications during run-time. Most service configurations being managed this way can be restarted or reloaded via `supervisorctl restart [app-name]`. To enable consul-template, set `SERVICE_CONSUL_TEMPLATE` equal to `enabled`. Configuration and template directories are located in `/etc/consul/template`.
+
+#### Envconsul
+The envconsul binary is included for use in `ENVIRONMENT_INIT` scripts that will seed initial startup configuration. It is not a service and cannot be managed by like one.
+
+
+#### Logrotate
+A logrotate helper script that will either execute logrotate or a user supplied script on a given interval (default is once per hour). The script itself can be found at `/opt/scripts/logrotate.sh`.
 
 #### Logstash-Forwarder
 Logstash-forwarder is currently baked into the container. This is more a stop-gap till the logstash Mesos framework matures. In an environment where components can produce a multitude of different types of logs, sending everything to stdout/stderr can be problematic on the log-processing end.
@@ -84,10 +95,33 @@ Escapes the passed string for use in a supervisor command and echo's it's value.
 
 ---
 
+#### config_service_consul_template
+
+**Name:** `config_service_consul_template`
+**Usage:** `__config_service_consul_template`
+**Supervisor Config:** `/etc/supervisor/conf.d/consul-template.disabled`
+
+**Description:**
+Manages the supervisor config of consul-template and enables base configuration supplied via environment variables.
+Variables prefixed with `CONSUL_TEMPLATE_` will automatically be passed to the consul-template service at runtime, e.g. `CONSUL_TEMPLATE_SSL_CA_CERT=/etc/consul/certs/ca.crt` becomes `-ssl-ca-cert="/etc/consul/certs/ca.crt"`. If managing the application configuration is handled via file configs, no other variables must be passed at runtime.
+
+
+| **Variable**                  | **Default**                           |
+|-------------------------------|---------------------------------------|
+| `CONSUL_TEMPLATE_CONFIG`      | `/etc/consul/template/conf.d`         |
+| `CONSUL_TEMPLATE_SYSLOG`      | `true`                                |
+| `SERVICE_CONSUL_TEMPLATE`     |                                       |
+| `SERVICE_CONSUL_TEMPLATE_CMD` | `consul-template <CONSUL_TEMPLATE_*>` |
+
+
+---
+
+
 #### config_service_keepalived
+
 **Name:** `config_service_keepalived`
 **Usage:** `__config_service_keepalived`
-**Supervisor Config:** `/etc/supervisor/conf.d/100-keepalived.conf`
+**Supervisor Config:** `/etc/supervisor/conf.d/keepalived.disabled`
 
 **Description:**
 Manages the supervisor config for keepalived.
@@ -112,7 +146,7 @@ Manages the supervisor config for keepalived.
 #### config_service_logrotate
 **Name:** `config_service_logrotate`
 **Usage:** `__config_service_logrotate`
-**Supervisor Config:** `/etc/supervisor/conf.d/990-logrotate.conf`
+**Supervisor Config:** `/etc/supervisor/conf.d/logrotate.disabled`
 
 **Description**
 Manages the supervisor config for logrotate bash helper script.
@@ -152,7 +186,7 @@ Manages the supervisor config for logrotate bash helper script.
 #### config_service_logstash_forwarder
 **Name:** `config_service_logstash_forwarder`
 **Usage:** `__config_service_logstash_forwarder`
-**Supervisor Config:** `/etc/supervisor/conf.d/900-logstash-forwarder.conf`
+**Supervisor Config:** `/etc/supervisor/conf.d/logstash-forwarder.disabled`
 
 **Description**
 Manages the supervisor config for logstash-forwarder and modifies the configuration if certain variables are supplied.
@@ -184,7 +218,7 @@ Manages the supervisor config for logstash-forwarder and modifies the configurat
 #### config_service_nslcd
 **Name:** `config_service_nslcd`
 **Usage:** `__config_service_nslcd`
-**Supervisor Config:** `/etc/supervisor/conf.d/200-nslcd.conf`
+**Supervisor Config:** `/etc/supervisor/conf.d/nslcd.disabled`
 
 **Description**
 Manages the supervisor config for nslcd.
@@ -206,7 +240,7 @@ Manages the supervisor config for nslcd.
 #### config_service_redpill
 **Name:** `config_service_redpill`
 **Usage:** `__config_service_redpill`
-**Supervisor Config:** `/etc/supervisor/conf.d/999-redpill.conf`
+**Supervisor Config:** `/etc/supervisor/conf.d/redpill.disabled`
 
 **Description**
 Manages the supervisor config for redpill in addition to generating the config
@@ -238,7 +272,7 @@ Manages the supervisor config for redpill in addition to generating the config
 #### config_service_rsyslog
 **Name:** `config_service_rsyslog`
 **Usage:** `__config_service_rsyslog`
-**Supervisor Config:** `/etc/supervisor/conf.d/000-redpill.conf`
+**Supervisor Config:** `/etc/supervisor/conf.d/redpill.disabled`
 
 **Description**
 Manages the supervisor config for rsyslog. Rsyslog is only enabled when other applications of services cannot log without it.
