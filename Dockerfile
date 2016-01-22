@@ -12,7 +12,7 @@ MAINTAINER Bob Killen / killen.bob@gmail.com / @mrbobbytables
 
 
 ENV DEBIAN_FRONTEND=noninteractive  \
-    VERSION_CONSUL_TEMPLATE=0.12.1  \
+    VERSION_CONSUL_TEMPLATE=0.12.2  \
     VERSION_ENVCONSUL=0.6.0
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D88E42B4                                                                \
