@@ -32,6 +32,9 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D88E42B4           
  && mkdir -p /etc/consul/template/conf.d              \
  && mkdir -p /etc/consul/template/templates           \
  && mkdir -p /etc/consul/envconsul/conf.d             \
+ && mkdir -p /var/log/consul-template  \
+ && mkdir -p /var/log/keepalived       \
+ && mkdir -p /var/log/nslcd            \
  && apt-get clean              \
  && rm -rf /etc/rsyslog.d/*    \
  && rm -rf /etc/logrotate.d/*  \

@@ -1,4 +1,4 @@
 if $programname == 'keepalived' then {
-  /var/log/keepalived.log
+  /var/log/keepalived/keepalived.log
   stop
 }

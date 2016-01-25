@@ -1,4 +1,4 @@
-/var/log/consul-template.log {
+/var/log/consul-template/consul-template.log {
   missingok
   size 10M
   rotate 5

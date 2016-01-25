@@ -1,4 +1,4 @@
-/var/log/keepalived.log {
+/var/log/keepalived/keepalived.log {
   missingok
   size 10M
   rotate 5

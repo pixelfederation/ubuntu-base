@@ -1,4 +1,4 @@
 if $programname == 'consul-template' then {
-    /var/log/consul-template.log
+    /var/log/consul-template/consul-template.log
       stop
 }

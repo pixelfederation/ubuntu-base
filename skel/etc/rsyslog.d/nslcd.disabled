@@ -1,4 +1,4 @@
 if $programname == 'nslcd' then {
-  /var/log/nslcd.log
+  /var/log/nslcd/nslcd.log
   stop
 }
