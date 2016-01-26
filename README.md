@@ -61,31 +61,34 @@ Redpill is a small script that performs status checks on services managed throug
 ---
 
 #### cidr2mask
+
 **Name:** `__cidr2mask`
+
 **Usage:** `__cidr2mask <cidr_value>`
 
-**Description:**
-Converts a cidr mask to a subnet mask and echo's it's value.
+**Description:** Converts a cidr mask to a subnet mask and echo's it's value.
 
 
 ---
 
 #### mask2cidr
+
 **Name:** `__mask2cidr`
+
 **Usage:** `__mask2cidr <subnet_maks>`
 
-**Description:**
-Converts a subnet mask to cidr notation and echo's it's value.
+**Description:** Converts a subnet mask to cidr notation and echo's it's value.
 
 
 ---
 
 #### escape_svsr_txt
+
 **Name:** `__escape_svsr_txt`
+
 **Usage:** `__escape_svsr_txt <string>`
 
-**Description:**
-Escapes the passed string for use in a supervisor command and echo's it's value.
+**Description:** Escapes the passed string for use in a supervisor command and echo's it's value.
 
 
 ---
@@ -98,12 +101,12 @@ Escapes the passed string for use in a supervisor command and echo's it's value.
 #### config_service_consul_template
 
 **Name:** `config_service_consul_template`
+
 **Usage:** `__config_service_consul_template`
+
 **Supervisor Config:** `/etc/supervisor/conf.d/consul-template.disabled`
 
-**Description:**
-Manages the supervisor config of consul-template and enables base configuration supplied via environment variables.
-Variables prefixed with `CONSUL_TEMPLATE_` will automatically be passed to the consul-template service at runtime, e.g. `CONSUL_TEMPLATE_SSL_CA_CERT=/etc/consul/certs/ca.crt` becomes `-ssl-ca-cert="/etc/consul/certs/ca.crt"`. If managing the application configuration is handled via file configs, no other variables must be passed at runtime.
+**Description:** Manages the supervisor config of consul-template and enables base configuration supplied via environment variables. Variables prefixed with `CONSUL_TEMPLATE_` will automatically be passed to the consul-template service at runtime, e.g. `CONSUL_TEMPLATE_SSL_CA_CERT=/etc/consul/certs/ca.crt` becomes `-ssl-ca-cert="/etc/consul/certs/ca.crt"`. If managing the application configuration is handled via file configs, no other variables must be passed at runtime.
 
 
 | **Variable**                  | **Default**                           |
@@ -120,11 +123,12 @@ Variables prefixed with `CONSUL_TEMPLATE_` will automatically be passed to the c
 #### config_service_keepalived
 
 **Name:** `config_service_keepalived`
+
 **Usage:** `__config_service_keepalived`
+
 **Supervisor Config:** `/etc/supervisor/conf.d/keepalived.disabled`
 
-**Description:**
-Manages the supervisor config for keepalived.
+**Description:** Manages the supervisor config for keepalived.
 
 | **Variable**              | **Default**                                           |
 |---------------------------|-------------------------------------------------------|
@@ -144,12 +148,14 @@ Manages the supervisor config for keepalived.
 ---
 
 #### config_service_logrotate
+
 **Name:** `config_service_logrotate`
+
 **Usage:** `__config_service_logrotate`
+
 **Supervisor Config:** `/etc/supervisor/conf.d/logrotate.disabled`
 
-**Description**
-Manages the supervisor config for logrotate bash helper script.
+**Description** Manages the supervisor config for logrotate bash helper script.
 
 | **Variable**                 | **Default**                         |
 |------------------------------|-------------------------------------|
@@ -184,12 +190,14 @@ Manages the supervisor config for logrotate bash helper script.
 ---
 
 #### config_service_logstash_forwarder
+
 **Name:** `config_service_logstash_forwarder`
+
 **Usage:** `__config_service_logstash_forwarder`
+
 **Supervisor Config:** `/etc/supervisor/conf.d/logstash-forwarder.disabled`
 
-**Description**
-Manages the supervisor config for logstash-forwarder and modifies the configuration if certain variables are supplied.
+**Description** Manages the supervisor config for logstash-forwarder and modifies the configuration if certain variables are supplied.
 
 
 | **Variable**                         | **Default**                                                                              |
@@ -216,12 +224,14 @@ Manages the supervisor config for logstash-forwarder and modifies the configurat
 ---
 
 #### config_service_nslcd
+
 **Name:** `config_service_nslcd`
+
 **Usage:** `__config_service_nslcd`
+
 **Supervisor Config:** `/etc/supervisor/conf.d/nslcd.disabled`
 
-**Description**
-Manages the supervisor config for nslcd.
+**Description** Manages the supervisor config for nslcd.
 
 | **Variable**        | **Default**         |
 |---------------------|---------------------|
@@ -238,12 +248,14 @@ Manages the supervisor config for nslcd.
 ---
 
 #### config_service_redpill
+
 **Name:** `config_service_redpill`
+
 **Usage:** `__config_service_redpill`
+
 **Supervisor Config:** `/etc/supervisor/conf.d/redpill.disabled`
 
-**Description**
-Manages the supervisor config for redpill in addition to generating the config
+**Description** Manages the supervisor config for redpill in addition to generating the config
 
 
 | Variable                   | Default         |
@@ -270,12 +282,14 @@ Manages the supervisor config for redpill in addition to generating the config
 ---
 
 #### config_service_rsyslog
+
 **Name:** `config_service_rsyslog`
+
 **Usage:** `__config_service_rsyslog`
+
 **Supervisor Config:** `/etc/supervisor/conf.d/redpill.disabled`
 
-**Description**
-Manages the supervisor config for rsyslog. Rsyslog is only enabled when other applications of services cannot log without it.
+**Description** Manages the supervisor config for rsyslog. Rsyslog is only enabled when other applications of services cannot log without it.
 
 ##### Defaults
 
@@ -301,11 +315,12 @@ Manages the supervisor config for rsyslog. Rsyslog is only enabled when other ap
 ---
 
 #### config_keepalived
+
 **Name:** `config_keepalived`
+
 **Usage:** `__config_keepalived`
 
-**Description:**
-If keepalived has been enabled via `__config_service_keepalived` This function will auto generate the keepalived config based on various environment variables.
+**Description:** If keepalived has been enabled via `__config_service_keepalived` This function will auto generate the keepalived config based on various environment variables.
 
 ##### Keepalived Auto Configuration Options and Defaults
 
