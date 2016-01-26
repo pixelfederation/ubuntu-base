@@ -136,20 +136,20 @@ __config_service_consul_template() {
         cmd_flags+=( "$var_name=\"${!i}\"" )
       done
     
-      consul_template_cmd="consul agent ${cmd_flags[*]}"
+      consul_template_cmd="consul-template ${cmd_flags[*]}"
       export SERVICE_CONSUL_TEMPLATE_CMD=${SERVICE_CONSUL_TEMPLATE_CMD:-"$(__escape_svsr_txt "$consul_template_cmd")"}
 
-      echo "[$(date)][Consul-template][Status] Enabled."
-      echo "[$(date)][Consul-Template][Start-Command] $SERVICE_CONSUL_TEMPLATE"
+      echo "[$(date)][Consul-Template][Status] Enabled."
+      echo "[$(date)][Consul-Template][Start-Command] $SERVICE_CONSUL_TEMPLATE_CMD"
       ;;
     disabled|*)
       if [[ "$SERVICE_CONSUL_TEMPLATE" != "disabled" ]]; then
-        echo "[$(date)][Consul-template][Init] Unrecognized Option. Defaulting to disabled."
+        echo "[$(date)][Consul-Template][Init] Unrecognized Option. Defaulting to disabled."
       fi
       if [[ -f /etc/supervisor/conf.d/consul-template.conf ]]; then
         mv /etc/supervisor/conf.d/consul-template.conf /etc/supervisor/conf.d/consul-template.disabled
       fi
-      echo "[$(date)][Consul-template][Status] Disabled."
+      echo "[$(date)][Consul-Template][Status] Disabled."
       ;;
   esac
 
