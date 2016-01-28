@@ -1,6 +1,8 @@
 [program:redpill]
 command=%(ENV_SERVICE_REDPILL_CMD)s
+user=root
 autostart=true
+startsecs=5
 priority=999
 stopwaitsecs=10
 stdout_logfile=/dev/fd/1

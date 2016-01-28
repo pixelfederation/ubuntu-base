@@ -1,0 +1,4 @@
+if $programname == 'nslcd' then {
+  /var/log/nslcd/nslcd.log
+  stop
+}

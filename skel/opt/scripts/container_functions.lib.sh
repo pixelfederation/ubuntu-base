@@ -13,6 +13,7 @@
 # Config Helper Functions
 # - escape_svsr_txt
 # Supervisor Service Config Functions
+# - config_service_consul_template
 # - config_service_keepalived
 # - config_service_logrotate
 # - config_service_logstash_forwarder
@@ -106,6 +107,56 @@ __escape_svsr_txt() {
 
 ########## Supervisor Service Config Functions ##########
 
+##### config_service_consul_template #####
+# Configures the supervisor config for the consul-template agent.
+##### config_service_consul_template #####
+
+__config_service_consul_template() {
+  case "${SERVICE_CONSUL_TEMPLATE:-}" in
+    enabled)
+      if [[ -f /etc/supervisor/conf.d/consul-template.disabled ]]; then
+        mv /etc/supervisor/conf.d/consul-template.disabled /etc/supervisor/conf.d/consul-template.conf
+      fi
+      if [[ ("$SERVICE_RSYSLOG" == "enabled") && (-f /etc/rsyslog.d/consul-template.disabled) ]]; then
+        mv /etc/rsyslog.d/consul-template.disabled /etc/rsyslog.d/consul-template.conf
+      fi
+      if [[ ("$SERVICE_LOGROTATE" == "enabled") && (-f /etc/logrotate.d/consul-template.disabled) ]]; then
+        mv /etc/logrotate.d/consul-template.disabled /etc/logrotate.d/consul-template.conf
+      fi
+
+      local var_name=""
+      local cmd_flags=()
+      local consul_template_cmd=""
+
+      export CONSUL_TEMPLATE_CONFIG=${CONSUL_TEMPLATE_CONFIG:-/etc/consul/template/conf.d}
+      export CONSUL_TEMPLATE_SYSLOG=${CONSUL_TEMPLATE_SYSLOG:-true}
+
+      for i in $(compgen -A variable | awk '/^CONSUL_TEMPLATE_/'); do
+        var_name="-$(echo "$i" | awk '{print tolower(substr($1,17))}' | sed -e 's|_[0-9]\{1,3\}||' -e 's|_|-|g')"
+        cmd_flags+=( "$var_name=\"${!i}\"" )
+      done
+    
+      consul_template_cmd="consul-template ${cmd_flags[*]}"
+      export SERVICE_CONSUL_TEMPLATE_CMD=${SERVICE_CONSUL_TEMPLATE_CMD:-"$(__escape_svsr_txt "$consul_template_cmd")"}
+
+      echo "[$(date)][Consul-Template][Status] Enabled."
+      echo "[$(date)][Consul-Template][Start-Command] $SERVICE_CONSUL_TEMPLATE_CMD"
+      ;;
+    disabled|*)
+      if [[ "$SERVICE_CONSUL_TEMPLATE" != "disabled" ]]; then
+        echo "[$(date)][Consul-Template][Init] Unrecognized Option. Defaulting to disabled."
+      fi
+      if [[ -f /etc/supervisor/conf.d/consul-template.conf ]]; then
+        mv /etc/supervisor/conf.d/consul-template.conf /etc/supervisor/conf.d/consul-template.disabled
+      fi
+      echo "[$(date)][Consul-Template][Status] Disabled."
+      ;;
+  esac
+
+  return 0
+}
+
+
 ##### config_service_keepalived #####
 # Configures the supervisor config for keepalived.
 # No configuration parameters needed to generate config.
@@ -115,8 +166,14 @@ __escape_svsr_txt() {
 __config_service_keepalived() {
   case "${SERVICE_KEEPALIVED,,}" in
     enabled)
-      if [[ -f /etc/supervisor/conf.d/100-keepalived.disabled ]]; then
-        mv /etc/supervisor/conf.d/100-keepalived.disabled /etc/supervisor/conf.d/100-keepalived.conf
+      if [[ -f /etc/supervisor/conf.d/keepalived.disabled ]]; then
+        mv /etc/supervisor/conf.d/keepalived.disabled /etc/supervisor/conf.d/keepalived.conf
+      fi
+      if [[ ("$SERVICE_RSYSLOG" == "enabled") && (-f /etc/rsyslog.d/keepalived.disabled) ]]; then
+        mv /etc/rsyslog.d/keepalived.disabled /etc/rsyslog.d/keepalived.conf
+      fi
+      if [[ ("$SERVICE_LOGROTATE" == "enabled") && (-f /etc/logrotate.d/keepalived.disabled) ]]; then
+        mv /etc/logrotate.d/keepalived.disabled /etc/logrotate.d/keepalived.conf
       fi
 
       export SERVICE_KEEPALIVED_CONF=${SERVICE_KEEPALIVED_CONF:-/etc/keepalived/keepalived.conf}
@@ -126,19 +183,20 @@ __config_service_keepalived() {
       echo "[$(date)][Keepalived][Status] Enabled"
       echo "[$(date)][Keepalived][Start-Command] $SERVICE_KEEPALIVED_CMD"
       ;;
-    disabled)
-      if [[ -f /etc/supervisor/conf.d/100-keepalived.conf ]]; then
-        mv /etc/supervisor/conf.d/100-keepalived.conf /etc/supervisor/conf.d/100-keepalived.disabled
+    disabled|*)
+      if [[ "$SERVICE_KEEPALIVED" != "disabled" ]]; then
+        echo "[$(date)][Keepalived][Init] Unrecongized Option. Defaulting to disabled."
+      fi
+      if [[ -f /etc/supervisor/conf.d/keepalived.conf ]]; then
+        mv /etc/supervisor/conf.d/keepalived.conf /etc/supervisor/conf.d/keepalived.disabled
+      fi
+      if [[ -f /etc/rsyslog.d/keepalived.conf ]]; then
+        mv /etc/rsyslog.d/keepalived.conf /etc/rsyslog.d/keepalived.disabled
+      fi
+      if [[ -f /etc/logrotate.d/keepalived.conf ]]; then
+        mv /etc/logrotate.d/keepalived.conf /etc/logrotate.d/keepalived.disabled
       fi
 
-      echo "[$(date)][Keepalived][Status] Disabled"
-      ;;
-    *)
-      if [[ -f /etc/supervisor/conf.d/100-keepalived.conf ]]; then
-        mv /etc/supervisor/conf.d/100-keepalived.conf /etc/supervisor/conf.d/100-keepalived.disabled
-      fi
-
-      echo "[$(date)][Keepalived] Unrecongized Option. Defaulting to disabled."
       echo "[$(date)][Keepalived][Status] Disabled"
       ;;
   esac
@@ -160,8 +218,8 @@ __config_service_keepalived() {
 __config_service_logrotate() {
   case "${SERVICE_LOGROTATE,,}" in
     enabled)
-      if [[ -f /etc/supervisor/conf.d/990-logrotate.disabled ]]; then
-        mv /etc/supervisor/conf.d/990-logrotate.disabled /etc/supervisor/conf.d/990-logrotate.conf
+      if [[ -f /etc/supervisor/conf.d/logrotate.disabled ]]; then
+        mv /etc/supervisor/conf.d/logrotate.disabled /etc/supervisor/conf.d/logrotate.conf
       fi
 
       local logrotate_cmd="/opt/scripts/logrotate.sh"
@@ -194,18 +252,14 @@ __config_service_logrotate() {
       
       echo "[$(date)][Logrotate][Start-Command] $SERVICE_LOGROTATE_CMD"
       ;;
-    disabled)
-      if [[ -f /etc/supervisor/conf.d/990-logrotate.conf ]]; then
-        mv /etc/supervisor/conf.d/990-logrotate.conf /etc/supervisor/conf.d/990-logrotate.disabled
+    disabled|*)
+      if [[ "$SERVICE_LOGROTATE" != "disabled" ]]; then
+        echo "[$(date)][Logrotate][Init] Unrecognized Option. Defaulting to disabled."
+      fi
+      if [[ -f /etc/supervisor/conf.d/logrotate.conf ]]; then
+        mv /etc/supervisor/conf.d/logrotate.conf /etc/supervisor/conf.d/logrotate.disabled
       fi
       echo "[$(date)][Logrotate][Status] Disabled"
-      ;;
-    *)
-      if [[ -f /etc/supervisor/conf.d/990-logrotate.conf ]]; then
-        mv /etc/supervisor/conf.d/990-logrotate.conf /etc/supervisor/conf.d/990-logrotate.disabled
-      fi
-      echo "[$(date)][Logrotate][Init] Unrecognized Option. Defaulting to disabled."
-      echo "[$(date)][Logrotate][Status] Disabled."
       ;;
   esac
 
@@ -232,8 +286,8 @@ __config_service_logrotate() {
 __config_service_logstash_forwarder() {
   case "${SERVICE_LOGSTASH_FORWARDER,,}" in
     enabled)
-      if [[ -f /etc/supervisor/conf.d/900-logstash-forwarder.disabled ]]; then
-        mv /etc/supervisor/conf.d/900-logstash-forwarder.disabled /etc/supervisor/conf.d/900-logstash-forwarder.conf
+      if [[ -f /etc/supervisor/conf.d/logstash-forwarder.disabled ]]; then
+        mv /etc/supervisor/conf.d/logstash-forwarder.disabled /etc/supervisor/conf.d/logstash-forwarder.conf
       fi
 
       export SERVICE_LOGSTASH_FORWARDER_CONF=${SERVICE_LOGSTASH_FORWARDER_CONF:-/opt/logstash-forwarder/logstash-forwarder.conf}
@@ -261,19 +315,14 @@ __config_service_logstash_forwarder() {
       echo "[$(date)][Logstash-Forwarder][Config] $SERVICE_LOGSTASH_FORWARDER_CONF"
       echo "[$(date)][Logstash-Forwarder][Start-Command] $SERVICE_LOGSTASH_FORWARDER_CMD"
       ;;
-    disabled)
-      if [[ -f /etc/supervisor/conf.d/900-logstash-forwarder.conf ]]; then
-        mv /etc/supervisor/conf.d/900-logstash-forwarder.conf /etc/supervisor/conf.d/900-logstash-forwarder.disabled
+    disabled|*)
+      if [[ "$SERVICE_LOGSTASH_FORWARDER" != "disabled" ]]; then
+        echo "[$(date)][Logstash-Forwarder][Init] Unrecognized Option. Defaulting to disabled."
+      fi
+      if [[ -f /etc/supervisor/conf.d/logstash-forwarder.conf ]]; then
+        mv /etc/supervisor/conf.d/logstash-forwarder.conf /etc/supervisor/conf.d/logstash-forwarder.disabled
       fi
 
-      echo "[$(date)][Logstash-Forwarder][Status] Disabled"
-      ;;
-    *)
-      if [[ -f /etc/supervisor/conf.d/900-logstash-forwarder.conf ]]; then
-        mv /etc/supervisor/conf.d/900-logstash-forwarder.conf /etc/supervisor/conf.d/900-logstash-forwarder.disabled
-      fi
-
-      echo "[$(date)][Logstash-Forwarder][Init] Unrecognized Option. Defaulting to disabled."
       echo "[$(date)][Logstash-Forwarder][Status] Disabled"
       ;;
   esac
@@ -289,30 +338,39 @@ __config_service_logstash_forwarder() {
 __config_service_nslcd() {
   case "${SERVICE_NSLCD,,}" in
     enabled)
-      if [[ -f /etc/supervisor/conf.d/200-nslcd.disabled ]]; then
-          mv /etc/supervisor/conf.d/200-nslcd.disabled /etc/supervisor/conf.d/200-nslcd.conf
+      if [[ -f /etc/supervisor/conf.d/nslcd.disabled ]]; then
+          mv /etc/supervisor/conf.d/nslcd.disabled /etc/supervisor/conf.d/nslcd.conf
+      fi
+      if [[ ("$SERVICE_RSYSLOG" == "enabled") && ( -f /etc/rsyslog.d/nslcd.disabled) ]]; then
+        mv /etc/rsyslog.d/nslcd.disabled /etc/rsyslog.d/nslcd.conf
+      fi
+      if [[ ("$SERVICE_LOGROTATE" == "enabled") && ( -f /etc/logrotate.d/nslcd.disabled) ]]; then
+        mv /etc/logrotate.d/nslcd.disabled /etc/logrotate.d/nslcd.conf
       fi
 
       export SERVICE_NSLCD_CMD=${SERVICE_NSLCD_CMD:-"/usr/sbin/nslcd -n"}
       echo "[$(date)][Nslcd][Status] Enabled"
       echo "[$(date)][Nslcd][Start-Command] $SERVICE_NSLCD_CMD"
       ;;
-    disabled)
-      if [[ -f /etc/supervisor/conf.d/200-nslcd.conf ]]; then
-        mv /etc/supervisor/conf.d/200-nslcd.conf /etc/supervisor/conf.d/200-nslcd.disabled
+    disabled|*)
+      if [[ "$SERVICE_NSLCD" != "disabled" ]]; then
+        echo "[$(date)][Nslcd][Init] Uncregonized Option. Defaulting to disabled."
+      fi
+      if [[ -f /etc/supervisor/conf.d/nslcd.conf ]]; then
+        mv /etc/supervisor/conf.d/nslcd.conf /etc/supervisor/conf.d/nslcd.disabled
+      fi
+      if [[ -f /etc/rsyslog.d/nslcd.conf ]]; then
+        mv /etc/rsyslog.d/nslcd.conf /etc/rsyslog.d/nslcd.disabled
+      fi
+      if [[ -f /etc/logrotate.d/nslcd.conf ]]; then
+        mv /etc/logrotate.d/nslcd.conf /etc/logrotate.d/nslcd.disabled
       fi
 
-      echo "[$(date)][Nslcd][Status] Disabled"
-      ;;
-    *)
-      if [[ -f /etc/supervisor/conf.d/200-nslcd.conf ]]; then
-        mv /etc/supervisor/conf.d/200-nslcd.conf /etc/supervisor/conf.d/200-nslcd.disabled
-      fi
-
-      echo "[$(date)][Nslcd][Init] Unrecognized Option. Defaulting to disabled."
       echo "[$(date)][Nslcd][Status] Disabled"
       ;;
   esac
+
+  return 0
 }
 
 
@@ -327,8 +385,8 @@ __config_service_nslcd() {
 __config_service_redpill() {
   case "${SERVICE_REDPILL,,}" in
     enabled)
-      if [[ -f /etc/supervisor/conf.d/999-redpill.disabled ]]; then
-        mv /etc/supervisor/conf.d/999-redpill.disabled /etc/supervisor/conf.d/999-redpill.conf
+      if [[ -f /etc/supervisor/conf.d/redpill.disabled ]]; then
+        mv /etc/supervisor/conf.d/redpill.disabled /etc/supervisor/conf.d/redpill.conf
       fi
 
       local redpill_cmd="/opt/scripts/redpill.sh"
@@ -352,18 +410,14 @@ __config_service_redpill() {
       
       echo "[$(date)][Redpill][Start-Command] $SERVICE_REDPILL_CMD"
       ;;
-    disabled)
-      if [[ -f /etc/supervisor/conf.d/999-redpill.conf ]]; then
-        mv /etc/supervisor/conf.d/999-redpill.conf /etc/supervisor/conf.d/999-redpill.disabled
+    disabled|*)
+      if [[ "$SERVICE_REDPILL" != "disabled" ]]; then
+        echo "[$(date)][Redpill][Init] Uncregonized Option. Defaulting to disabled."
+      fi
+      if [[ -f /etc/supervisor/conf.d/redpill.conf ]]; then
+        mv /etc/supervisor/conf.d/redpill.conf /etc/supervisor/conf.d/redpill.disabled
       fi
       echo "[$(date)][Redpill][Status] Disabled"
-      ;;
-    *)
-      if [[ -f /etc/supervisor/conf.d/999-redpill.conf ]]; then
-        mv /etc/supervisor/conf.d/999-redpill.conf /etc/supervisor/conf.d/999-redpill.disabled
-      fi
-      echo "[$(date)][Redpill][Init] Unrecognized Option. Defaulting to disabled."
-      echo "[$(date)][Redpill][Status] Disabled."
       ;;
   esac
 
@@ -382,8 +436,8 @@ __config_service_redpill() {
 __config_service_rsyslog() {
   case "${SERVICE_RSYSLOG,,}" in
     enabled)
-      if [[ -f /etc/supervisor/conf.d/000-rsyslog.disabled ]]; then
-          mv /etc/supervisor/conf.d/000-rsyslog.disabled /etc/supervisor/conf.d/000-rsyslog.conf
+      if [[ -f /etc/supervisor/conf.d/rsyslog.disabled ]]; then
+          mv /etc/supervisor/conf.d/rsyslog.disabled /etc/supervisor/conf.d/rsyslog.conf
       fi
 
       export SERVICE_RSYSLOG_CONF=${SERVICE_RSYSLOG_CONF:-/etc/rsyslog.conf}
@@ -393,22 +447,20 @@ __config_service_rsyslog() {
       echo "[$(date)][Rsyslog][Status] Enabled"
       echo "[$(date)][Rsyslog][Start-Command] $SERVICE_RSYSLOG_CMD"
       ;;
-    disabled)
+    disabled|*)
+      if [[ "$SERVICE_RSYSLOG" != "disabled" ]]; then
+        echo "[$(date)][Rsyslog][Init] Uncregonized Option. Defaulting to disabled."
+      fi
+
       if [[ -f /etc/supervisor/conf.d/000-rsyslog.conf ]]; then
         mv /etc/supervisor/conf.d/000-rsyslog.conf /etc/supervisor/conf.d/000-rsyslog.disabled
       fi
 
-      echo "[$(date)][Rsyslog][Status] Disabled"
-      ;;
-    *)
-      if [[ -f /etc/supervisor/conf.d/000-rsyslog.conf ]]; then
-        mv /etc/supervisor/conf.d/000-rsyslog.conf /etc/supervisor/conf.d/000-rsyslog.disabled
-      fi
-
-      echo "[$(date)][Rsyslog][Init] Unrecognized Option. Defaulting to disabled."
       echo "[$(date)][Rsyslog][Status] Disabled"
       ;;
   esac
+
+  return 0
 }
 
 
@@ -419,7 +471,7 @@ __config_keepalived() {
     echo "[$(date)][KEEPALIVED] KEEPALIVED_VRRP_UNICAST_PEER not set."
     return 1
   fi
-  if [[ ! $(compgen -A variable | grep -E "KEEPALIVED_VIRTUAL_IPADDRESS_[0-9]{1,3}") ]]; then
+  if ! compgen -A variable | grep -q -E "KEEPALIVED_VIRTUAL_IPADDRESS_[0-9]{1,3}"; then
     echo "[$(date)][KEEPALIVED] No KEEPALIVED_VIRTUAL_IPADDRESS_ varibles detected."
     return 1
   fi
@@ -460,7 +512,7 @@ __config_keepalived() {
   done
   echo "  }" >> "$SERVICE_KEEPALIVED_CONF"
 
-  if [[ $(compgen -A variable | grep -E "KEEPALIVED_VIRTUAL_IPADDRESS_EXCLUDED_[0-9]{1,3}") ]]; then
+  if compgen -A variable | grep -q -E "KEEPALIVED_VIRTUAL_IPADDRESS_EXCLUDED_[0-9]{1,3}"; then
     echo "  virtual_ipaddress_excluded {" >> "$SERVICE_KEEPALIVED_CONF"
     for evip in $(compgen -A variable | grep -E "KEEPALIVED_VIRTUAL_IPADDRESS_EXCLUDED_[0-9]{1,3}"); do
       echo "    ${!evip}" >> "$SERVICE_KEEPALIVED_CONF"
@@ -468,7 +520,7 @@ __config_keepalived() {
     echo "  }" >> "$SERVICE_KEEPALIVED_CONF"
   fi
 
-  if [[ $(compgen -A variable | grep -E "KEEPALIVED_TRACK_INTERFACE_[0-9]{1,3}") ]]; then
+  if compgen -A variable | grep -q -E "KEEPALIVED_TRACK_INTERFACE_[0-9]{1,3}"; then
     echo "  track_interface {" >> "$SERVICE_KEEPALIVED_CONF"
     for interface in $(compgen -A variable | grep -E "KEEPALIVED_TRACK_INTERFACE_[0-9]{1,3}"); do
       echo "    ${!interface}" >> "$SERVICE_KEEPALIVED_CONF"
