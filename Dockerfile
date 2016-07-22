@@ -5,11 +5,13 @@
 # Description:
 # Base Ubuntu build with logstash forwarder, supervisor, and various
 # helper scripts.
+# Former author
+# MAINTAINER Bob Killen / killen.bob@gmail.com / @mrbobbytables
 ################################################################################
 
 FROM ubuntu:14.04
-MAINTAINER Bob Killen / killen.bob@gmail.com / @mrbobbytables
 
+MAINTAINER Milan Baran / mbaran@pixelfederation.com / @mbaran
 
 ENV DEBIAN_FRONTEND=noninteractive  \
     VERSION_CONSUL_TEMPLATE=0.12.2  \
